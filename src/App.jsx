@@ -1,7 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
+import {useState, useEffect, useRef} from 'react';
+// const [state, setstate] = useState(initialState)
 
 function App() {
+
+  const [currencies, setCurrencies] = useState([]);
+  const [pair, setPair] = useState('');
+  const [price, setPrice] = useState('0.00');
+  const [pastData, setpastData] = useState({});
+  const ws = useRef(null);
+
+  let first = useRef(false);
+  const url = "https://api.pro.coinbase.com";
+
+  useEffect()
+
   return (
     <div className="App">
       <header className="App-header">
