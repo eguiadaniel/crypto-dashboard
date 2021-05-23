@@ -1,3 +1,10 @@
+# Crypto Dashboard based on Renaissance Engineer Tutorial
+Youtube - https://www.youtube.com/watch?v=5alEc5KuyKg
+Github - https://github.com/renaissancetroll/reactjs-crypto-api-dashboard
+chartJS docs - https://www.chartjs.org/
+coinbase API docs - https://docs.pro.coinbase.com/
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

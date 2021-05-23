@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 import {useState, useEffect, useRef} from 'react';
+import {getProducts} from './services/api-coinbase'
+import axios from 'axios';
 // const [state, setstate] = useState(initialState)
 
 function App() {
@@ -14,7 +16,34 @@ function App() {
   let first = useRef(false);
   const url = "https://api.pro.coinbase.com";
 
-  useEffect()
+  useEffect( async() => {
+    ws.current = new WebSocket("wss://ws-feed.pro.coinbase.com");
+
+    let pairs = [];    
+
+    const products = await getProducts();
+    let filteredProducts = products.filter((product) => {
+      if (product.quote_currency  === "EUR") {
+        return product;
+      }
+    });
+
+    filteredProducts = filteredProducts.sort((a, b) => {
+      if (a.base_currency < b.base_currency) {
+        return -1;
+      }
+      if (a.base_currency > b.base_currency) {
+        return 1;
+      }
+      return 0;
+    });
+
+    setCurrencies(filteredProducts)
+    first.current = true;
+
+    console.log(filteredProducts)
+  }, []);
+
 
   return (
     <div className="App">
