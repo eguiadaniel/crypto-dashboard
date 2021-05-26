@@ -11,38 +11,50 @@ function App() {
   const [pair, setPair] = useState('');
   const [price, setPrice] = useState('0.00');
   const [pastData, setpastData] = useState({});
-  const ws = useRef(null);
+  // const ws = useRef(null);
+  let ws = {};
 
   let first = useRef(false);
   const url = "https://api.pro.coinbase.com";
 
-  useEffect( async() => {
-    ws.current = new WebSocket("wss://ws-feed.pro.coinbase.com");
+  useEffect( () => {
+    async function fetchData() {
+      ws.current = new WebSocket("wss://ws-feed.pro.coinbase.com");
+  
+      let pairs = [];    
+  
+      const products = await getProducts();
+      let filteredProducts = products.filter((product) => {
+        if (product.quote_currency  === "EUR") {
+          return product;
+        }
+      });
+  
+      filteredProducts = filteredProducts.sort((a, b) => {
+        if (a.base_currency < b.base_currency) {
+          return -1;
+        }
+        if (a.base_currency > b.base_currency) {
+          return 1;
+        }
+        return 0;
+      });
+  
+      setCurrencies(filteredProducts)
+      first.current = true;
+  
+      console.log("filtered products here ---------", filteredProducts)
+    }
 
-    let pairs = [];    
-
-    const products = await getProducts();
-    let filteredProducts = products.filter((product) => {
-      if (product.quote_currency  === "EUR") {
-        return product;
-      }
-    });
-
-    filteredProducts = filteredProducts.sort((a, b) => {
-      if (a.base_currency < b.base_currency) {
-        return -1;
-      }
-      if (a.base_currency > b.base_currency) {
-        return 1;
-      }
-      return 0;
-    });
-
-    setCurrencies(filteredProducts)
-    first.current = true;
-
-    console.log(filteredProducts)
+    fetchData()
   }, []);
+
+  useEffect(() => {
+    if (!first.current) {
+      console.log("returning on first render")
+    }
+    console.log("running pair change")
+  },[])
 
 
   return (
