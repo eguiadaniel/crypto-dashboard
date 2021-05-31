@@ -9,3 +9,12 @@ export const getProducts = async() => {
     console.log(response.data)
     return response.data;
 }
+
+// get historical data
+export const getHistoricalData = async(pair) => {
+   
+    const response = await axios.get(url + "/products/${pair}/candles?granularity=86400`")
+    console.log('Axios historicalData here -----------')
+    console.log(response.data)
+    return response.data;
+}
