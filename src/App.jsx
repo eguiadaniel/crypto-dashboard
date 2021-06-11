@@ -4,10 +4,10 @@ import {useState, useEffect, useRef} from 'react';
 import {getProducts} from './services/api-coinbase'
 import { formatData } from "./utils";
 import axios from 'axios';
-// const [state, setstate] = useState(initialState)
 
 function App() {
-
+  
+  // const [state, setstate] = useState(initialState)
   const [currencies, setCurrencies] = useState([]);
   const [pair, setPair] = useState('ADA-EUR');
   const [price, setPrice] = useState('0.00');
@@ -16,6 +16,7 @@ function App() {
   // let ws = {};
   let ws = useRef(null);
   let first = useRef(false);
+
   const url = "https://api.pro.coinbase.com";
 
   useEffect( () => {
