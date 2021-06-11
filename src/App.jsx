@@ -1,7 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
+import Dashboard from "./components/Dashboard";
+
 import {useState, useEffect, useRef} from 'react';
-import {getProducts} from './services/api-coinbase'
+import {getProducts, getHistoricalData} from './services/api-coinbase'
 import { formatData } from "./utils";
 import axios from 'axios';
 
@@ -73,7 +75,6 @@ function App() {
     if (!first.current) {
       return;
     }
-
     
     let msg = {
       type: "subscribe",
@@ -82,16 +83,21 @@ function App() {
     };
   
     let jsonMsg = JSON.stringify(msg);
+
+    //InvalidStateError: Failed to execute 'send' on 'WebSocket': Still in CONNECTING state.
+    //error raised because you are sending your message before the WebSocket connection is established.
+    //This onopen function waits for you websocket connection to establish before sending your message.
+
     ws.current.onopen = () => {
       ws.current.send(jsonMsg);
     }
 
-    let historicalDataURL = `${url}/products/${pair}/candles?granularity=86400`;
+    // let historicalDataURL = `${url}/products/${pair}/candles?granularity=86400`;
     const fetchHistoricalData = async () => {
-      let dataArr = [];
-      await fetch(historicalDataURL)
-        .then((res) => res.json())
-        .then((data) => (dataArr = data));
+      let dataArr = await getHistoricalData(pair)
+      // await fetch(historicalDataURL)
+      //   .then((res) => res.json())
+      //   .then((data) => (dataArr = data));
       
       //helper function to format data that will be implemented later
       let formattedData = formatData(dataArr);
@@ -114,22 +120,34 @@ function App() {
   //dependency array is passed pair state, will run on any pair state change
   }, [pair]);
 
+
+  const handleSelect = (e) => {
+    let unsubMsg = {
+      type: "unsubscribe",
+      product_ids: [pair],
+      channels: ["ticker"]
+    };
+    let unsub = JSON.stringify(unsubMsg);
+
+    ws.current.send(unsub);
+
+    setPair(e.target.value);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      {
+        <select name="currency" value={pair} onChange={handleSelect}>
+          {currencies.map((cur, idx) => {
+            return (
+              <option key={idx} value={cur.id}>
+                {cur.display_name}
+              </option>
+            );
+          })}
+        </select>
+      }
+      <Dashboard price={price} data={pastData} />
     </div>
   );
 }
